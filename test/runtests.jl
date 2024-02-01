@@ -20,6 +20,8 @@ case_pf_dc_native = joinpath(data_path, "test_pf_dc_native.json")
 case_opf_ac = joinpath(data_path, "test_opf_ac.json")
 case_opf_cl = joinpath(data_path, "test_opf_cl.json")
 case_tnep_ac = joinpath(data_path, "test_tnep_ac.json")
+case_dnep_mn_strg_ac = joinpath(data_path, "test_dnep_mn_strg_ac.json")
+case_dnep_ac = joinpath(data_path, "test_dnep_ac.json")
 case_ots_dc = joinpath(data_path, "test_ots_dc.json")
 
 # pandamodels
