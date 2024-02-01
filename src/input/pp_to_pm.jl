@@ -48,7 +48,7 @@ function get_solver(pm)
         solver = JuMP.optimizer_with_attributes(
             Juniper.Optimizer,
             "nl_solver" => nl_solver,
-            "mip_solver" => mip_solver,
+            # "mip_solver" => mip_solver,
             "log_levels" => [],
             "time_limit" => time_limit,
         )
