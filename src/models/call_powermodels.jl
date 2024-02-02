@@ -134,6 +134,44 @@ function run_powermodels_dnep(json_path)
     return result
 end
 
+function run_powermodels_dnep_mn_strg_relaxed_with_duals(json_path)
+    pm = _PdM.load_pm_from_json(json_path)
+    active_powermodels_silence!(pm)
+    pm = check_powermodels_data!(pm)
+    pm = remove_extract_params!(pm)
+    model = get_model(pm["pm_model"])
+    # solver = get_solver(pm)
+    solver = JuMP.optimizer_with_attributes(Ipopt.Optimizer, "tol"=>1e-6, "print_level"=>0)
+    mn = set_pq_values_from_timeseries(pm)
+    result = _PM.solve_dnep_mn_strg(
+        mn,
+        model,
+        solver,
+        relax_integrality=true,
+        setting = Dict("output" => Dict("branch_flows" => true, "duals" => true)),
+    )
+    return result
+end
+
+function run_powermodels_dnep_relaxed_with_duals(json_path)
+    pm = _PdM.load_pm_from_json(json_path)
+    active_powermodels_silence!(pm)
+    pm = check_powermodels_data!(pm)
+    pm = remove_extract_params!(pm)
+    model = get_model(pm["pm_model"])
+    # solver = get_solver(pm)
+    solver = JuMP.optimizer_with_attributes(Ipopt.Optimizer, "tol"=>1e-6, "print_level"=>0)
+
+    result = _PM.solve_dnep(
+        pm,
+        model,
+        solver,
+        relax_integrality=true,
+        setting = Dict("output" => Dict("branch_flows" => true, "duals" => true)),
+    )
+    return result
+end
+
 function run_powermodels_ots(json_path)
     pm = _PdM.load_pm_from_json(json_path)
     active_powermodels_silence!(pm)

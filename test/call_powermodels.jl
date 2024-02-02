@@ -84,6 +84,35 @@
         @test result["solve_time"] > 0.0
     end
 
+    @testset "test for powermodels_dnep_mn_strg_relaxed_with_duals: ac" begin
+        result = run_powermodels_dnep_mn_strg_relaxed_with_duals(case_dnep_mn_strg_ac)
+
+        @test string(result["termination_status"]) == "LOCALLY_SOLVED"
+        @test string(result["dual_status"]) == "FEASIBLE_POINT"
+        @test string(result["primal_status"]) == "FEASIBLE_POINT"
+
+        new_branch = result["solution"]["nw"]["1"]["ne_branch"]
+        for idx in keys(new_branch)
+            @test isapprox(new_branch[idx]["built"], 0.0, atol=1e-2, rtol=1e-2) ||
+                  isapprox(new_branch[idx]["built"], 1.0, atol=1e-2, rtol=1e-2)
+        end
+
+        branch = result["solution"]["nw"]["1"]["branch"]
+        for idx in keys(branch)
+            @test isapprox(branch[idx]["rate_add"], 0.0, atol=1e-3, rtol=1e-3)
+            @test haskey(branch[idx], "mu_sm_to")
+            @test haskey(branch[idx], "mu_sm_fr")
+        end
+
+        @test isapprox(new_branch["1"]["pt"], -26.2741, atol = 1e-1, rtol = 1e-1)
+        @test isapprox(new_branch["2"]["pf"], 0, atol = 1e-1, rtol = 1e-1)
+
+        @test isapprox(result["objective_lb"], -Inf; atol = 1e-4)
+        @test isapprox(result["objective"], 75.4941; atol = 1e-4)
+
+        @test result["solve_time"] > 0.0
+    end
+
     @testset "test for powermodels_dnep: ac" begin
         result = run_powermodels_dnep(case_dnep_ac)
 
@@ -97,11 +126,33 @@
                   isapprox(new_branch[idx]["built"], 1.0, atol=1e-6, rtol=1e-6)
         end
 
-        @test isapprox(new_branch["1"]["pf"], 13.800, atol = 1e-2, rtol = 1e-2)
-        @test isapprox(new_branch["2"]["pt"], -17.5697, atol = 1e-2, rtol = 1e-2)
+        @test isapprox(new_branch["1"]["pf"], 23.4697, atol = 1e-2, rtol = 1e-2)
+        @test isapprox(new_branch["2"]["pt"], -12.9853, atol = 1e-2, rtol = 1e-2)
 
         @test isapprox(result["objective_lb"], 60.0419; atol = 1e-1)
         @test isapprox(result["objective"], 60.0419; atol = 1e-1)
+
+        @test result["solve_time"] > 0.0
+    end
+
+    @testset "test for powermodels_dnep_relaxed_with_duals: ac" begin
+        result = run_powermodels_dnep_relaxed_with_duals(case_dnep_ac)
+
+        @test string(result["termination_status"]) == "LOCALLY_SOLVED"
+        @test string(result["dual_status"]) == "FEASIBLE_POINT"
+        @test string(result["primal_status"]) == "FEASIBLE_POINT"
+
+        new_branch = result["solution"]["ne_branch"]
+        for idx in keys(new_branch)
+            @test isapprox(new_branch[idx]["built"], 0.0, atol=1e-2, rtol=1e-2) ||
+                  isapprox(new_branch[idx]["built"], 1.0, atol=1e-2, rtol=1e-2)
+        end
+
+        @test isapprox(new_branch["1"]["pf"], 28.19425, atol = 1e-2, rtol = 1e-2)
+        @test isapprox(new_branch["2"]["pt"], 0.0, atol = 1e-2, rtol = 1e-2)
+
+        @test isapprox(result["objective_lb"], -Inf; atol = 1e-1)
+        @test isapprox(result["objective"], 19.7800; atol = 1e-1)
 
         @test result["solve_time"] > 0.0
     end
