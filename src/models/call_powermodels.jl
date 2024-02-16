@@ -140,7 +140,9 @@ function run_powermodels_dnep_mn_strg_relaxed_with_duals(json_path)
     pm = check_powermodels_data!(pm)
     pm = remove_extract_params!(pm)
     model = get_model(pm["pm_model"])
-    pm["pm_solver"] = "ipopt"
+    if pm["pm_solver"] == "juniper"
+        pm["pm_solver"] = "ipopt"
+    end
     solver = get_solver(pm)
 
     mn = set_pq_values_from_timeseries(pm)
@@ -160,7 +162,9 @@ function run_powermodels_dnep_relaxed_with_duals(json_path)
     pm = check_powermodels_data!(pm)
     pm = remove_extract_params!(pm)
     model = get_model(pm["pm_model"])
-    pm["pm_solver"] = "ipopt"
+    if pm["pm_solver"] == "juniper"
+        pm["pm_solver"] = "ipopt"
+    end
     solver = get_solver(pm)
     
     result = _PM.solve_dnep(
